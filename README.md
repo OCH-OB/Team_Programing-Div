@@ -1,6 +1,9 @@
-# 町内匿名捜査室 AI-DLC Inception Docs
+# 町内匿名捜査室 — Anonymous Neighborhood Detectives
 
-このリポジトリは、AWS Summit Japan 2026 AI-DLC ハッカソン向けプロジェクト **「町内匿名捜査室」** の Inception フェーズ成果物をまとめたドキュメントリポジトリです。
+> 誰もぶつかっていないのに、みんな少しだけ身構える角がある。
+> その違和感の正体を、匿名捜査員として検分してほしい。
+
+AWS Summit Japan 2026 AI-DLC ハッカソン応募作品「町内匿名捜査室」の Inception フェーズ成果物リポジトリです。
 
 現時点ではアプリケーションコードは含まず、AI-DLC の手順に沿って作成した要件、ユーザーストーリー、アプリケーション設計、Unit of Work、実行計画を管理しています。
 
