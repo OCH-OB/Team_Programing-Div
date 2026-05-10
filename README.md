@@ -197,7 +197,7 @@ graph TB
   end
 
   subgraph Workflow["Workflow"]
-    SFN["Step Functions Express<br/>ReportProcessing<br/>Unit 5: 投稿整理+地点統合"]
+    SFN["ReportProcessing<br/>Workflow<br/>(Unit 5)"]
   end
 
   subgraph AI["AI"]
@@ -231,9 +231,9 @@ graph TB
   GR -.事件生成時.-> EF
   MOD -.投稿時.-> RF
 
-  classDef phase1 fill:#dbeafe,stroke:#2563eb,stroke-width:2px
-  classDef phase2 fill:#f3f4f6,stroke:#9ca3af,stroke-dasharray: 5 5
-  classDef storage fill:#fef3c7,stroke:#d97706
+  classDef phase1 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#0b1f4a
+  classDef phase2 fill:#e5e7eb,stroke:#6b7280,stroke-dasharray:5 5,color:#1f2937
+  classDef storage fill:#fef3c7,stroke:#b45309,color:#78350f
 
   class Inv,Adm,EF,RF,NF,AF,DF,SFN,BF phase1
   class GR,MOD phase2
