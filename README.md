@@ -137,15 +137,31 @@ Construction Phase 1 では、MVPデモ成立に必要な以下の 7 Unit を実
 
 15分以内のデモで、以下のループを見せることを目標にします。
 
-```text
-事件配信
-  -> 匿名捜査員の投稿
-  -> AI整理
-  -> 地点統合
-  -> 行政ダッシュボード反映
-  -> 役立っている通知
-  -> 特命化の予兆
+```mermaid
+graph LR
+  E[事件配信] --> R[匿名捜査員の投稿]
+  R --> AI[AI整理]
+  AI --> L[地点統合]
+  L --> D[行政ダッシュボード]
+  D --> N[役立っている通知]
+  N --> S[特命化の予兆]
+  S -.次の事件へ.-> E
 ```
+
+## デモシナリオ概要(15分想定)
+
+| Scene | 内容 |
+|-------|------|
+| 0. 導入 | サービスのピッチと主人公(佐藤さん 68歳)を紹介 |
+| 1. 事件配信 | 朝の散歩前、事件 #T-01 が届く |
+| 2. 現場確認 | 「半歩遅れて見える」感覚に気づく。同地点の他捜査員報告も表示 |
+| 3. 投稿 | 写真+一文+選択式回答(3タップ) |
+| 4. AI整理 | 投稿が要約・分類される |
+| 5. 行政ダッシュボード反映 | 「即応候補」として地点表示 |
+| 6. 通知 | 「あなたの報告は有力な手がかりとして整理されました」 |
+| 7. 締め | 表は遊び、裏は確認候補地点化 — 両側を少しダメにする構造 |
+
+詳細は [mvp-demo-scenario.md](aidlc-docs/inception/plans/) または `aidlc-docs/inception/` 配下の関連ドキュメントを参照してください。
 
 ## Technology Direction
 
@@ -159,6 +175,70 @@ Construction Phase 1 では、MVPデモ成立に必要な以下の 7 Unit を実
 - Monitoring: Amazon CloudWatch
 - Deploy: AWS Amplify
 - Infrastructure: AWS SAM prototype -> AWS CDK TypeScript migration
+
+### コンポーネント全体図
+
+Phase 1 (MVP) の Unit を青色で、Phase 2(MVP 外)を点線で示します。
+
+```mermaid
+graph TB
+  subgraph Frontend["Frontend (Next.js)"]
+    Inv["Investigator App<br/>Unit 3"]
+    Adm["Admin Dashboard<br/>Unit 9"]
+  end
+
+  subgraph API["API Layer (Lambda)"]
+    EF["EventFunction<br/>Unit 1"]
+    RF["ReportFunction<br/>Unit 4"]
+    NF["NotificationFunction<br/>Unit 7"]
+    AF["AdminFunction<br/>Unit 9"]
+    DF["DemoFunction<br/>Unit 11"]
+    BF["BedrockFunction"]
+  end
+
+  subgraph Workflow["Workflow"]
+    SFN["ReportProcessing<br/>Workflow<br/>(Unit 5)"]
+  end
+
+  subgraph AI["AI"]
+    BR["Amazon Bedrock"]
+  end
+
+  subgraph Storage["Storage"]
+    DDB["DynamoDB"]
+    S3["S3 (写真)"]
+  end
+
+  subgraph Phase2["Phase 2 — MVP外"]
+    GR["Guardrail<br/>Unit 2"]
+    MOD["Moderation<br/>Unit 10"]
+  end
+
+  Inv --> EF
+  Inv --> RF
+  Inv --> NF
+  Adm --> AF
+  RF --> SFN
+  DF --> SFN
+  SFN --> BF
+  BF --> BR
+  EF --> DDB
+  RF --> DDB
+  RF --> S3
+  AF --> DDB
+  SFN --> DDB
+
+  GR -.事件生成時.-> EF
+  MOD -.投稿時.-> RF
+
+  classDef phase1 fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#0b1f4a
+  classDef phase2 fill:#e5e7eb,stroke:#6b7280,stroke-dasharray:5 5,color:#1f2937
+  classDef storage fill:#fef3c7,stroke:#b45309,color:#78350f
+
+  class Inv,Adm,EF,RF,NF,AF,DF,SFN,BF phase1
+  class GR,MOD phase2
+  class DDB,S3,BR storage
+```
 
 Construction 開始前に、利用可能な Bedrock モデルとリージョンを確認します。
 
