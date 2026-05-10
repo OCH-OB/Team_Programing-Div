@@ -176,6 +176,70 @@ graph LR
 - Deploy: AWS Amplify
 - Infrastructure: AWS SAM prototype -> AWS CDK TypeScript migration
 
+### コンポーネント全体図
+
+Phase 1 (MVP) の Unit を青色で、Phase 2(MVP 外)を点線で示します。
+
+```mermaid
+graph TB
+  subgraph Frontend["Frontend (Next.js)"]
+    Inv["Investigator App<br/>Unit 3"]
+    Adm["Admin Dashboard<br/>Unit 9"]
+  end
+
+  subgraph API["API Layer (Lambda)"]
+    EF["EventFunction<br/>Unit 1"]
+    RF["ReportFunction<br/>Unit 4"]
+    NF["NotificationFunction<br/>Unit 7"]
+    AF["AdminFunction<br/>Unit 9"]
+    DF["DemoFunction<br/>Unit 11"]
+    BF["BedrockFunction"]
+  end
+
+  subgraph Workflow["Workflow"]
+    SFN["Step Functions Express<br/>ReportProcessing<br/>Unit 5: 投稿整理+地点統合"]
+  end
+
+  subgraph AI["AI"]
+    BR["Amazon Bedrock"]
+  end
+
+  subgraph Storage["Storage"]
+    DDB["DynamoDB"]
+    S3["S3 (写真)"]
+  end
+
+  subgraph Phase2["Phase 2 — MVP外"]
+    GR["Guardrail<br/>Unit 2"]
+    MOD["Moderation<br/>Unit 10"]
+  end
+
+  Inv --> EF
+  Inv --> RF
+  Inv --> NF
+  Adm --> AF
+  RF --> SFN
+  DF --> SFN
+  SFN --> BF
+  BF --> BR
+  EF --> DDB
+  RF --> DDB
+  RF --> S3
+  AF --> DDB
+  SFN --> DDB
+
+  GR -.事件生成時.-> EF
+  MOD -.投稿時.-> RF
+
+  classDef phase1 fill:#dbeafe,stroke:#2563eb,stroke-width:2px
+  classDef phase2 fill:#f3f4f6,stroke:#9ca3af,stroke-dasharray: 5 5
+  classDef storage fill:#fef3c7,stroke:#d97706
+
+  class Inv,Adm,EF,RF,NF,AF,DF,SFN,BF phase1
+  class GR,MOD phase2
+  class DDB,S3,BR storage
+```
+
 Construction 開始前に、利用可能な Bedrock モデルとリージョンを確認します。
 
 ## Notes
